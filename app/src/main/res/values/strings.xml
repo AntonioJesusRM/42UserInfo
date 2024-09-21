@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">42 User Info</string>
+    <!-- Login String -->
+    <string name="login_button">Iniciar sesion</string>
 </resources>
