@@ -2,4 +2,9 @@
     <string name="app_name">42 User Info</string>
     <!-- Login String -->
     <string name="login_button">Iniciar sesion</string>
+    <!-- List component -->
+    <string name="list_component_show_less">Show less</string>
+    <string name="list_component_show_more">Show more</string>
+    <!-- Tool Bar -->
+    <string name="tool_bar_exit_content_description">"Cerrar sesión"</string>
 </resources>

@@ -1,15 +1,13 @@
 package com.example.a42userinfo
 
-sealed interface RallyDestination {
+sealed interface MainDestination {
     val route: String
 }
 
-data object Login : RallyDestination {
+data object Login : MainDestination {
     override val route = "login"
 }
 
-data object Home : RallyDestination {
+data object Home : MainDestination {
     override val route = "home"
 }
-
-val rallyTabRowScreens = listOf(Login, Home)

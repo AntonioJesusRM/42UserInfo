@@ -1,7 +1,6 @@
 package com.example.a42userinfo
 
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Modifier
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -10,14 +9,12 @@ import com.example.a42userinfo.ui.home.HomeScreen
 import com.example.a42userinfo.ui.login.LoginScreen
 
 @Composable
-fun RallyNavHost(
-    navController: NavHostController,
-    modifier: Modifier = Modifier
+fun MainNavHost(
+    navController: NavHostController
 ) {
     NavHost(
         navController = navController,
-        startDestination = Login.route,
-        modifier = modifier
+        startDestination = Login.route
     ) {
         composable(route = Login.route) {
             LoginScreen(
