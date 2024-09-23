@@ -15,6 +15,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -23,16 +26,51 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.a42userinfo.domain.model.GetUserDataModel
 import com.example.a42userinfo.domain.model.GetUserProjectModel
 import com.example.a42userinfo.domain.model.GetUserSkillModel
 import com.example.a42userinfo.ui.components.HomeTopBar
 import com.example.a42userinfo.ui.components.ListElements
+import com.example.a42userinfo.ui.components.LoadComponents
 
 @Composable
 fun HomeScreen(
     onLogOutClick: () -> Unit = {},
+    code: String?,
+    homeViewModel: HomeViewModel = hiltViewModel()
+) {
+    val uiState by homeViewModel.uiState.collectAsState()
+
+    LaunchedEffect(key1 = code) {
+        if (code != null) {
+            homeViewModel.getToken(code)
+        }
+    }
+
+    when (uiState) {
+        UiState.IDLE -> {
+            HomeLayout(onLogOutClick)
+        }
+
+        UiState.LOADING -> {
+            LoadComponents()
+        }
+
+        UiState.SUCCESS -> {
+            Text("Autenticación exitosa")
+        }
+
+        UiState.ERROR -> {
+            Text("Error en la autenticación")
+        }
+    }
+}
+
+@Composable
+fun HomeLayout(
+    onLogOutClick: () -> Unit = {}
 ) {
     Scaffold(
         containerColor = MaterialTheme.colorScheme.secondary,
@@ -156,5 +194,5 @@ fun UserCard(userInfo: GetUserDataModel) {
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen()
+    HomeLayout()
 }

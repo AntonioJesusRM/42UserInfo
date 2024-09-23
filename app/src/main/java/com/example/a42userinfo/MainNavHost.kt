@@ -35,7 +35,8 @@ fun MainNavHost(
             HomeScreen(
                 onLogOutClick = {
                     navController.navigateSingleTopTo(Login.route)
-                }
+                },
+                code = code
             )
         }
     }

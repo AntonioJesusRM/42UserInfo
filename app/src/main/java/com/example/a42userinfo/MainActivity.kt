@@ -47,8 +47,9 @@ fun UserInfoApp(intent: Intent) {
             }
         }
     }
-    MainNavHost(
-        navController = navController,
-        code = authCode
-    )
+    if (authCode == null) {
+        MainNavHost(navController = navController, code = null)
+    } else {
+        MainNavHost(navController = navController, code = authCode)
+    }
 }
