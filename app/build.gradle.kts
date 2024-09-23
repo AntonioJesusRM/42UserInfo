@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hiltPluggin)
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.compose.compiler)
+    alias(libs.plugins.pluginSecrets)
 }
 
 android {
@@ -24,6 +25,10 @@ android {
         }
     }
 
+    buildFeatures {
+        buildConfig = true
+    }
+
     buildTypes {
         release {
             isMinifyEnabled = false
@@ -31,8 +36,14 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+            buildConfigField(
+                "String",
+                "CLIENT_SECRET",
+                "\"${project.findProperty("CLIENT_SECRET")}\""
+            )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
@@ -51,6 +62,13 @@ android {
             excludes += "/META-INF/{AL2.0,LGPL2.1}"
         }
     }
+
+    secrets {
+        propertiesFileName = "secrets.properties"
+        defaultPropertiesFileName = "local.default.properties"
+        ignoreList.add("keyToIgnore")
+        ignoreList.add("sdk.*")
+    }
 }
 
 dependencies {
@@ -67,7 +85,9 @@ dependencies {
     implementation(libs.coil.compose)
     implementation(libs.hilt.android)
     implementation(libs.androidx.hilt.navigation.compose)
+    implementation(libs.interceptor)
     implementation(libs.bundles.retrofit)
+    implementation(libs.androidx.appcompat)
     kapt(libs.hilt.android.compiler)
     implementation(libs.androidx.navigation.compose)
     testImplementation(libs.junit)
