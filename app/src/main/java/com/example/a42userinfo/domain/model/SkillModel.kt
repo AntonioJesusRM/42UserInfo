@@ -3,8 +3,7 @@ package com.example.a42userinfo.domain.model
 import kotlinx.parcelize.Parcelize
 
 @Parcelize
-data class GetUserProjectModel(
+data class SkillModel(
     val name: String,
-    val status: String,
-    val finalMark: String
+    val level: String
 ) : BaseModel()

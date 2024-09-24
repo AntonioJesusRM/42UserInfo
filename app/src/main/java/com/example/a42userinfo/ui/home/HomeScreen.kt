@@ -15,6 +15,9 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.RectangleShape
@@ -23,19 +26,47 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.a42userinfo.domain.model.GetUserDataModel
 import com.example.a42userinfo.domain.model.GetUserProjectModel
-import com.example.a42userinfo.domain.model.GetUserSkillModel
+import com.example.a42userinfo.domain.model.SkillModel
 import com.example.a42userinfo.ui.components.HomeTopBar
 import com.example.a42userinfo.ui.components.ListElements
+import com.example.a42userinfo.ui.components.LoadComponents
 
 @Composable
 fun HomeScreen(
-    onLogOutClick: () -> Unit = {},
+    onLogOutClick: () -> Unit = {}, code: String?, homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.secondary,
+    val uiState by homeViewModel.uiState.collectAsState()
+
+    LaunchedEffect(key1 = code) {
+        if (code != null) {
+            homeViewModel.getToken(code)
+        }
+    }
+
+    when (uiState) {
+        UiState.LOADING -> {
+            LoadComponents()
+        }
+
+        UiState.SUCCESS -> {
+            HomeLayout(onLogOutClick)
+        }
+
+        UiState.ERROR -> {
+            Text("Error en la autenticación")
+        }
+    }
+}
+
+@Composable
+fun HomeLayout(
+    onLogOutClick: () -> Unit = {}
+) {
+    Scaffold(containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = MaterialTheme.colorScheme.primary,
         topBar = {
             HomeTopBar(title = "Home", onLogOutClick = onLogOutClick)
@@ -43,21 +74,19 @@ fun HomeScreen(
 
         content = { innerPadding ->
             HomeBody(modifier = Modifier.padding(innerPadding))
-        }
-    )
+        })
 }
 
 @Composable
 fun HomeBody(modifier: Modifier = Modifier) {
     val skills = listOf(
-        GetUserSkillModel(name = "Kotlin", level = "Expert", percentage = "90"),
-        GetUserSkillModel(name = "Java", level = "Intermediate", percentage = "70"),
-        GetUserSkillModel(name = "Jetpack Compose", level = "Beginner", percentage = "40")
+        SkillModel("web", level = "5"),
+        SkillModel("c", level = "10"),
     )
     val projects = listOf(
-        GetUserProjectModel(name = "ft_transcendence", status = "success", percentage = "120"),
-        GetUserProjectModel(name = "ft_irc", status = "success", percentage = "100"),
-        GetUserProjectModel(name = "Swifty Companion", status = "failed", percentage = "0")
+        GetUserProjectModel(name = "ft_transcendence", status = "success", finalMark = "120"),
+        GetUserProjectModel(name = "ft_irc", status = "success", finalMark = "100"),
+        GetUserProjectModel(name = "Swifty Companion", status = "failed", finalMark = "0")
     )
     Column(
         modifier = modifier.padding(10.dp)
@@ -79,7 +108,7 @@ fun HomeBody(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${TextOverflow.Ellipsis}: ${skill.percentage}%",
+                text = "${TextOverflow.Ellipsis}: ${skill.level}%",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -92,7 +121,7 @@ fun HomeBody(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${project.status}: ${project.percentage}%",
+                text = "${project.status}: ${project.finalMark}%",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -109,15 +138,16 @@ fun UserCard(userInfo: GetUserDataModel) {
         ),
     ) {
         Row(
-            modifier = Modifier.padding(all = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(all = 10.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = rememberAsyncImagePainter(userInfo.userImg),
                 contentDescription = "Profile picture",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .border(1.5.dp, MaterialTheme.colorScheme.primary, RectangleShape)
+                    .border(
+                        1.5.dp, MaterialTheme.colorScheme.primary, RectangleShape
+                    )
                     .size(120.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))
@@ -156,5 +186,5 @@ fun UserCard(userInfo: GetUserDataModel) {
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    HomeScreen()
+    HomeLayout()
 }
