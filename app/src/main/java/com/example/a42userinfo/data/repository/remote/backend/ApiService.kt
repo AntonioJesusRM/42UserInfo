@@ -1,5 +1,6 @@
 package com.example.a42userinfo.data.repository.remote.backend
 
+import com.example.a42userinfo.data.repository.remote.response.GetCoalitionResponse
 import com.example.a42userinfo.data.repository.remote.response.GetDataResponse
 import com.example.a42userinfo.data.repository.remote.response.PostTokenResponse
 import retrofit2.Response
@@ -7,6 +8,7 @@ import retrofit2.http.Field
 import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
+import retrofit2.http.Path
 
 interface ApiService {
     //Token
@@ -23,4 +25,10 @@ interface ApiService {
     //User Data
     @GET("v2/me")
     suspend fun getData(): Response<GetDataResponse>
+
+    //Coalition
+    @GET("v2/users/{id}/coalitions")
+    suspend fun getCoalition(
+        @Path("id") id: Int
+    ): Response<List<GetCoalitionResponse>>
 }

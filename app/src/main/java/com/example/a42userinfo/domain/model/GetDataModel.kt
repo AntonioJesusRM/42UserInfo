@@ -4,6 +4,7 @@ import kotlinx.parcelize.Parcelize
 
 @Parcelize
 data class GetDataModel(
+    val userId: Int,
     val userImg: String,
     val login: String,
     val email: String,

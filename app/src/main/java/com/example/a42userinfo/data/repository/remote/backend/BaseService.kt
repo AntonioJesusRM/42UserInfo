@@ -45,19 +45,15 @@ abstract class BaseService {
         }
 
         return ErrorModel(
-            errorData?.error ?: "",
-            errorData?.errorCode ?: "0",
-            errorData?.message ?: ""
+            errorData?.error ?: "", errorData?.errorCode ?: "0", errorData?.message ?: ""
         )
     }
 
     private fun mapErrorResponse(throwable: Throwable): ErrorModel {
-        return (
-                ErrorModel(
-                    "Lo sentimos, estamos presentando problemas de conexión.",
-                    "0",
-                    throwable.message ?: "Vuelve a intentarlo más tarde."
-                )
-                )
+        return (ErrorModel(
+            "Lo sentimos, estamos presentando problemas de conexión.",
+            "0",
+            throwable.message ?: "Vuelve a intentarlo más tarde."
+        ))
     }
 }

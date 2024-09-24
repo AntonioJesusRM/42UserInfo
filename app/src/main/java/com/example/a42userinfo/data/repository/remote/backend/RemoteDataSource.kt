@@ -1,9 +1,11 @@
 package com.example.a42userinfo.data.repository.remote.backend
 
+import com.example.a42userinfo.data.mapper.GetCoalitionMapper
 import com.example.a42userinfo.data.mapper.GetDataMapper
 import com.example.a42userinfo.data.repository.preferences.PreferencesDataSource
 import com.example.a42userinfo.data.repository.remote.request.PostTokenRequest
 import com.example.a42userinfo.data.repository.remote.response.BaseResponse
+import com.example.a42userinfo.domain.model.CoalitionModel
 import com.example.a42userinfo.domain.model.ErrorModel
 import com.example.a42userinfo.domain.model.GetDataModel
 import kotlinx.coroutines.flow.Flow
@@ -34,10 +36,21 @@ class RemoteDataSource @Inject constructor(
         }
     }
 
+    //Get Data
     fun getData(): Flow<BaseResponse<GetDataModel>> = flow {
         val apiResult = callApiService.callGetData()
         if (apiResult is BaseResponse.Success) {
             emit(BaseResponse.Success(GetDataMapper().fromResponse(apiResult.data)))
+        } else if (apiResult is BaseResponse.Error) {
+            emit(BaseResponse.Error(apiResult.error))
+        }
+    }
+
+    //Get Coalition
+    fun getCoalition(id: Int): Flow<BaseResponse<CoalitionModel>> = flow {
+        val apiResult = callApiService.callGetCoalition(id)
+        if (apiResult is BaseResponse.Success) {
+            emit(BaseResponse.Success(GetCoalitionMapper().fromResponse(apiResult.data)))
         } else if (apiResult is BaseResponse.Error) {
             emit(BaseResponse.Error(apiResult.error))
         }

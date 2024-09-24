@@ -38,11 +38,9 @@ class RetrofitClient @Inject constructor(
     init {
         val httpClient: OkHttpClient.Builder = OkHttpClient.Builder()
 
-        val certificatePinner = CertificatePinner.Builder()
-            .add(URL, CERTIFICATE_1)
-            .add(URL, CERTIFICATE_2)
-            .add(URL, CERTIFICATE_3)
-            .build()
+        val certificatePinner =
+            CertificatePinner.Builder().add(URL, CERTIFICATE_1).add(URL, CERTIFICATE_2)
+                .add(URL, CERTIFICATE_3).build()
         httpClient.certificatePinner(certificatePinner)
 
         val hostnamesAllow = listOf(
@@ -53,8 +51,7 @@ class RetrofitClient @Inject constructor(
         }
         httpClient.hostnameVerifier(hostnameVerifier)
 
-        httpClient
-            .connectTimeout(RETROFIT_TIMEOUT_IN_SECOND, TimeUnit.SECONDS)
+        httpClient.connectTimeout(RETROFIT_TIMEOUT_IN_SECOND, TimeUnit.SECONDS)
             .readTimeout(RETROFIT_TIMEOUT_IN_SECOND, TimeUnit.SECONDS)
             .writeTimeout(RETROFIT_TIMEOUT_IN_SECOND, TimeUnit.SECONDS)
 
@@ -64,19 +61,14 @@ class RetrofitClient @Inject constructor(
 
             val request = when {
                 needAddBearer(chain.request()) -> {
-                    original.newBuilder()
-                        .header(
-                            HEADER_KEY_TOKEN,
-                            HEADER_VALUE_TOKEN_START + preferencesDataSource.getAuthToken()
-                        )
-                        .method(original.method, original.body)
-                        .build()
+                    original.newBuilder().header(
+                        HEADER_KEY_TOKEN,
+                        HEADER_VALUE_TOKEN_START + preferencesDataSource.getAuthToken()
+                    ).method(original.method, original.body).build()
                 }
 
                 else -> {
-                    original.newBuilder()
-                        .method(original.method, original.body)
-                        .build()
+                    original.newBuilder().method(original.method, original.body).build()
                 }
             }
 
@@ -86,12 +78,9 @@ class RetrofitClient @Inject constructor(
         httpClient.addInterceptor(LoggingInterceptor())
         val gson = GsonBuilder().setLenient().create()
 
-        retrofit = Retrofit.Builder()
-            .baseUrl(BASE_URL)
-            .addConverterFactory(GsonConverterFactory.create(gson))
-            .client(httpClient.build())
-            .callbackExecutor(Executors.newSingleThreadExecutor())
-            .build()
+        retrofit = Retrofit.Builder().baseUrl(BASE_URL)
+            .addConverterFactory(GsonConverterFactory.create(gson)).client(httpClient.build())
+            .callbackExecutor(Executors.newSingleThreadExecutor()).build()
     }
 
     private fun needAddBearer(request: Request): Boolean {
@@ -129,9 +118,7 @@ class RetrofitClient @Inject constructor(
 
             val newResponseBody = responseBodyString.toResponseBody(response.body?.contentType())
 
-            return response.newBuilder()
-                .body(newResponseBody)
-                .build()
+            return response.newBuilder().body(newResponseBody).build()
         }
     }
 

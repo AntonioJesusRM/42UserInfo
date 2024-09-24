@@ -2,6 +2,7 @@ package com.example.a42userinfo.data.repository.remote.backend
 
 import com.example.a42userinfo.data.repository.remote.request.PostTokenRequest
 import com.example.a42userinfo.data.repository.remote.response.BaseResponse
+import com.example.a42userinfo.data.repository.remote.response.GetCoalitionResponse
 import com.example.a42userinfo.data.repository.remote.response.GetDataResponse
 import com.example.a42userinfo.data.repository.remote.response.PostTokenResponse
 import javax.inject.Inject
@@ -23,5 +24,9 @@ class CallApiService @Inject constructor(
 
     suspend fun callGetData(): BaseResponse<GetDataResponse> {
         return apiCall { apiService.getData() }
+    }
+
+    suspend fun callGetCoalition(id: Int): BaseResponse<List<GetCoalitionResponse>> {
+        return apiCall { apiService.getCoalition(id) }
     }
 }

@@ -1,6 +1,5 @@
 package com.example.a42userinfo.ui.home
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a42userinfo.BuildConfig
@@ -9,9 +8,9 @@ import com.example.a42userinfo.data.constants.GeneralConstants.Companion.GRANT_T
 import com.example.a42userinfo.data.constants.GeneralConstants.Companion.REDIRECT_URI
 import com.example.a42userinfo.data.repository.remote.request.PostTokenRequest
 import com.example.a42userinfo.data.repository.remote.response.BaseResponse
+import com.example.a42userinfo.domain.usecase.GetCoalitionUseCase
 import com.example.a42userinfo.domain.usecase.GetDataUseCase
 import com.example.a42userinfo.domain.usecase.GetTokenUseCase
-import com.example.a42userinfo.ui.extensions.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -26,7 +25,8 @@ enum class UiState {
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getTokenUseCase: GetTokenUseCase,
-    private val getDataUseCase: GetDataUseCase
+    private val getDataUseCase: GetDataUseCase,
+    private val getCoalitionUseCase: GetCoalitionUseCase
 ) : ViewModel() {
     private val _uiState = MutableStateFlow(UiState.LOADING)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
@@ -59,10 +59,19 @@ class HomeViewModel @Inject constructor(
                 when (it) {
                     is BaseResponse.Error -> _uiState.value = UiState.ERROR
 
-                    is BaseResponse.Success -> {
-                        _uiState.value = UiState.SUCCESS
-                        Log.d(TAG, "%> Datos: ${it.data}")
-                    }
+                    is BaseResponse.Success -> getCoalition(it.data.userId)
+                }
+            }
+        }
+    }
+
+    private fun getCoalition(id: Int) {
+        viewModelScope.launch {
+            getCoalitionUseCase(id).collect {
+                when (it) {
+                    is BaseResponse.Error -> _uiState.value = UiState.ERROR
+
+                    is BaseResponse.Success -> _uiState.value = UiState.SUCCESS
                 }
             }
         }

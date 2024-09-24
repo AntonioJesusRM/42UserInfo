@@ -10,6 +10,7 @@ class GetDataMapper : ResponseMapper<GetDataResponse, GetDataModel> {
         }?.map { GetUserProjectMapper().fromResponse(it) } ?: emptyList()
         val cursus42 = response.cursusUsers?.find { it.cursusId == 21 }
         return GetDataModel(
+            userId = response.id ?: 0,
             login = response.login ?: "",
             userImg = response.image.versions?.small ?: "",
             email = response.email ?: "",
