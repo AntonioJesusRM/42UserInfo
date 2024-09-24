@@ -7,9 +7,9 @@ import com.example.a42userinfo.BuildConfig
 import com.example.a42userinfo.data.constants.GeneralConstants.Companion.CLIENT_ID
 import com.example.a42userinfo.data.constants.GeneralConstants.Companion.GRANT_TYPE
 import com.example.a42userinfo.data.constants.GeneralConstants.Companion.REDIRECT_URI
-import com.example.a42userinfo.data.repository.preferences.PreferencesDataSource
 import com.example.a42userinfo.data.repository.remote.request.PostTokenRequest
 import com.example.a42userinfo.data.repository.remote.response.BaseResponse
+import com.example.a42userinfo.domain.usecase.GetDataUseCase
 import com.example.a42userinfo.domain.usecase.GetTokenUseCase
 import com.example.a42userinfo.ui.extensions.TAG
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -20,15 +20,15 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 enum class UiState {
-    IDLE, LOADING, SUCCESS, ERROR
+    LOADING, SUCCESS, ERROR
 }
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getTokenUseCase: GetTokenUseCase,
-    private val preferencesDataSource: PreferencesDataSource
+    private val getDataUseCase: GetDataUseCase
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(UiState.IDLE)
+    private val _uiState = MutableStateFlow(UiState.LOADING)
     val uiState: StateFlow<UiState> = _uiState.asStateFlow()
 
     fun getToken(code: String?) {
@@ -44,18 +44,24 @@ class HomeViewModel @Inject constructor(
                 _uiState.value = UiState.LOADING
                 getTokenUseCase(tokenRequest).collect {
                     when (it) {
-                        is BaseResponse.Error -> {
-                            _uiState.value = UiState.ERROR
-                        }
+                        is BaseResponse.Error -> _uiState.value = UiState.ERROR
 
-                        is BaseResponse.Success -> {
-                            Log.d(TAG, "%> Token: ${preferencesDataSource.getAuthToken()}")
-                            Log.d(
-                                TAG,
-                                "%> Token refresh: ${preferencesDataSource.getRefreshToken()}"
-                            )
-                            _uiState.value = UiState.SUCCESS
-                        }
+                        is BaseResponse.Success -> getData()
+                    }
+                }
+            }
+        }
+    }
+
+    private fun getData() {
+        viewModelScope.launch {
+            getDataUseCase().collect {
+                when (it) {
+                    is BaseResponse.Error -> _uiState.value = UiState.ERROR
+
+                    is BaseResponse.Success -> {
+                        _uiState.value = UiState.SUCCESS
+                        Log.d(TAG, "%> Datos: ${it.data}")
                     }
                 }
             }

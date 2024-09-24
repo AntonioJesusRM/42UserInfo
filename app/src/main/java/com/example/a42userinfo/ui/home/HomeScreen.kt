@@ -30,16 +30,14 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import com.example.a42userinfo.domain.model.GetUserDataModel
 import com.example.a42userinfo.domain.model.GetUserProjectModel
-import com.example.a42userinfo.domain.model.GetUserSkillModel
+import com.example.a42userinfo.domain.model.SkillModel
 import com.example.a42userinfo.ui.components.HomeTopBar
 import com.example.a42userinfo.ui.components.ListElements
 import com.example.a42userinfo.ui.components.LoadComponents
 
 @Composable
 fun HomeScreen(
-    onLogOutClick: () -> Unit = {},
-    code: String?,
-    homeViewModel: HomeViewModel = hiltViewModel()
+    onLogOutClick: () -> Unit = {}, code: String?, homeViewModel: HomeViewModel = hiltViewModel()
 ) {
     val uiState by homeViewModel.uiState.collectAsState()
 
@@ -50,16 +48,12 @@ fun HomeScreen(
     }
 
     when (uiState) {
-        UiState.IDLE -> {
-            HomeLayout(onLogOutClick)
-        }
-
         UiState.LOADING -> {
             LoadComponents()
         }
 
         UiState.SUCCESS -> {
-            Text("Autenticación exitosa")
+            HomeLayout(onLogOutClick)
         }
 
         UiState.ERROR -> {
@@ -72,8 +66,7 @@ fun HomeScreen(
 fun HomeLayout(
     onLogOutClick: () -> Unit = {}
 ) {
-    Scaffold(
-        containerColor = MaterialTheme.colorScheme.secondary,
+    Scaffold(containerColor = MaterialTheme.colorScheme.secondary,
         contentColor = MaterialTheme.colorScheme.primary,
         topBar = {
             HomeTopBar(title = "Home", onLogOutClick = onLogOutClick)
@@ -81,21 +74,19 @@ fun HomeLayout(
 
         content = { innerPadding ->
             HomeBody(modifier = Modifier.padding(innerPadding))
-        }
-    )
+        })
 }
 
 @Composable
 fun HomeBody(modifier: Modifier = Modifier) {
     val skills = listOf(
-        GetUserSkillModel(name = "Kotlin", level = "Expert", percentage = "90"),
-        GetUserSkillModel(name = "Java", level = "Intermediate", percentage = "70"),
-        GetUserSkillModel(name = "Jetpack Compose", level = "Beginner", percentage = "40")
+        SkillModel("web", level = "5"),
+        SkillModel("c", level = "10"),
     )
     val projects = listOf(
-        GetUserProjectModel(name = "ft_transcendence", status = "success", percentage = "120"),
-        GetUserProjectModel(name = "ft_irc", status = "success", percentage = "100"),
-        GetUserProjectModel(name = "Swifty Companion", status = "failed", percentage = "0")
+        GetUserProjectModel(name = "ft_transcendence", status = "success", finalMark = "120"),
+        GetUserProjectModel(name = "ft_irc", status = "success", finalMark = "100"),
+        GetUserProjectModel(name = "Swifty Companion", status = "failed", finalMark = "0")
     )
     Column(
         modifier = modifier.padding(10.dp)
@@ -117,7 +108,7 @@ fun HomeBody(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${TextOverflow.Ellipsis}: ${skill.percentage}%",
+                text = "${TextOverflow.Ellipsis}: ${skill.level}%",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -130,7 +121,7 @@ fun HomeBody(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${project.status}: ${project.percentage}%",
+                text = "${project.status}: ${project.finalMark}%",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -147,15 +138,16 @@ fun UserCard(userInfo: GetUserDataModel) {
         ),
     ) {
         Row(
-            modifier = Modifier.padding(all = 10.dp),
-            verticalAlignment = Alignment.CenterVertically
+            modifier = Modifier.padding(all = 10.dp), verticalAlignment = Alignment.CenterVertically
         ) {
             Image(
                 painter = rememberAsyncImagePainter(userInfo.userImg),
                 contentDescription = "Profile picture",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .border(1.5.dp, MaterialTheme.colorScheme.primary, RectangleShape)
+                    .border(
+                        1.5.dp, MaterialTheme.colorScheme.primary, RectangleShape
+                    )
                     .size(120.dp)
             )
             Spacer(modifier = Modifier.width(8.dp))

@@ -100,7 +100,7 @@ class RetrofitClient @Inject constructor(
         val requestUrl = request.url.toString()
 
         return when {
-            requestUrl.endsWith("oauth/v2/token", true) -> {
+            requestUrl.endsWith("oauth/token", true) -> {
                 Log.d(TAG, "%> No needAddBearer endsWith(oauth/v2/token")
                 false
             }
@@ -112,7 +112,7 @@ class RetrofitClient @Inject constructor(
 
             else -> {
                 Log.d(TAG, "%> No needAddBearer contemplated")
-                false
+                true
             }
         }
     }
