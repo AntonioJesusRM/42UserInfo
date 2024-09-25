@@ -7,4 +7,8 @@
     <string name="list_component_show_more">Show more</string>
     <!-- Tool Bar -->
     <string name="tool_bar_exit_content_description">"Cerrar sesión"</string>
+    <!-- Dialog -->
+    <string name="dialog_logout_text">¿Estas seguro que quieres cerrar sesión?</string>
+    <string name="dialog_accept">Aceptar</string>
+    <string name="dialog_cancel">Cancelar</string>
 </resources>

@@ -14,13 +14,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.a42userinfo.R
 import com.example.a42userinfo.ui.components.CustomButton
 
 @Composable
 fun LoginScreen(
     onClickLogin: () -> Unit = {},
+    loginViewModel: LoginViewModel = hiltViewModel()
 ) {
+    loginViewModel.logOut()
     Column(
         modifier = Modifier
             .fillMaxSize()

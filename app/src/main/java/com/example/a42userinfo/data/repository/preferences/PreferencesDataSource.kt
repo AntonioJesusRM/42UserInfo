@@ -18,6 +18,12 @@ class PreferencesDataSource @Inject constructor(
         )
     }
 
+    fun deleteAuthToken() {
+        encryptedSharedPreferencesManager.removeKeyFromEncryptedSharedPreferences(
+            EncryptedSharedPreferencesKeys.ENCRYPTED_SHARED_PREFERENCES_KEY_LOGIN_AUTH
+        )
+    }
+
     fun saveRefreshToken(token: String) {
         encryptedSharedPreferencesManager.saveStringEncryptedSharedPreferences(
             EncryptedSharedPreferencesKeys.ENCRYPTED_SHARED_PREFERENCES_KEY_REFRESH_TOKEN,
@@ -27,6 +33,12 @@ class PreferencesDataSource @Inject constructor(
 
     fun getRefreshToken(): String {
         return encryptedSharedPreferencesManager.getStringEncryptedSharedPreferences(
+            EncryptedSharedPreferencesKeys.ENCRYPTED_SHARED_PREFERENCES_KEY_REFRESH_TOKEN
+        )
+    }
+
+    fun deleteRefreshToken() {
+        encryptedSharedPreferencesManager.removeKeyFromEncryptedSharedPreferences(
             EncryptedSharedPreferencesKeys.ENCRYPTED_SHARED_PREFERENCES_KEY_REFRESH_TOKEN
         )
     }
