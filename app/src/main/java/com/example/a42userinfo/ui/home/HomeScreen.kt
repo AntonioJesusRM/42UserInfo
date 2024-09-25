@@ -1,7 +1,10 @@
 package com.example.a42userinfo.ui.home
 
+import android.content.ContentValues.TAG
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -20,86 +23,70 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
-import com.example.a42userinfo.domain.model.GetUserDataModel
-import com.example.a42userinfo.domain.model.GetUserProjectModel
-import com.example.a42userinfo.domain.model.SkillModel
+import coil.decode.SvgDecoder
+import coil.request.ImageRequest
 import com.example.a42userinfo.ui.components.HomeTopBar
 import com.example.a42userinfo.ui.components.ListElements
 import com.example.a42userinfo.ui.components.LoadComponents
+import com.example.a42userinfo.ui.theme.UserInfoTheme
 
 @Composable
 fun HomeScreen(
     onLogOutClick: () -> Unit = {}, code: String?, homeViewModel: HomeViewModel = hiltViewModel()
 ) {
-    val uiState by homeViewModel.uiState.collectAsState()
+    val userUiState by homeViewModel.uiState.collectAsState()
 
     LaunchedEffect(key1 = code) {
         if (code != null) {
             homeViewModel.getToken(code)
         }
     }
-
-    when (uiState) {
-        UiState.LOADING -> {
-            LoadComponents()
-        }
-
-        UiState.SUCCESS -> {
-            HomeLayout(onLogOutClick)
-        }
-
-        UiState.ERROR -> {
-            Text("Error en la autenticación")
-        }
+    if (userUiState.isLoading) {
+        LoadComponents()
+    } else if (userUiState.error != null) {
+        Text("Error: ${userUiState.error}")
+    } else {
+        Log.d(TAG, "%> DATA: $userUiState")
+        HomeLayout(onLogOutClick, userUiState)
     }
 }
 
 @Composable
 fun HomeLayout(
-    onLogOutClick: () -> Unit = {}
+    onLogOutClick: () -> Unit = {}, userUiState: UserUiState
 ) {
-    Scaffold(containerColor = MaterialTheme.colorScheme.secondary,
-        contentColor = MaterialTheme.colorScheme.primary,
-        topBar = {
-            HomeTopBar(title = "Home", onLogOutClick = onLogOutClick)
-        },
+    UserInfoTheme(userUiState.coalition) {
+        Scaffold(containerColor = MaterialTheme.colorScheme.secondary,
+            contentColor = MaterialTheme.colorScheme.primary,
+            topBar = {
+                HomeTopBar(title = "Home", onLogOutClick = onLogOutClick)
+            },
 
-        content = { innerPadding ->
-            HomeBody(modifier = Modifier.padding(innerPadding))
-        })
+            content = { innerPadding ->
+                HomeBody(modifier = Modifier.padding(innerPadding), userUiState)
+            })
+    }
 }
 
 @Composable
-fun HomeBody(modifier: Modifier = Modifier) {
-    val skills = listOf(
-        SkillModel("web", level = "5"),
-        SkillModel("c", level = "10"),
-    )
-    val projects = listOf(
-        GetUserProjectModel(name = "ft_transcendence", status = "success", finalMark = "120"),
-        GetUserProjectModel(name = "ft_irc", status = "success", finalMark = "100"),
-        GetUserProjectModel(name = "Swifty Companion", status = "failed", finalMark = "0")
-    )
+fun HomeBody(modifier: Modifier = Modifier, userUiState: UserUiState) {
+    val skills = userUiState.skills
+    val projects = userUiState.listProjects
     Column(
         modifier = modifier.padding(10.dp)
     ) {
-        UserCard(
-            GetUserDataModel(
-                userImg = "https://images.freeimages.com/images/large-previews/3cb/the-treasure-1203251.jpg",
-                "asolano-",
-                "asolano-@Student.42Malaga.com",
-                level = "15",
-                evPoints = "0"
-            )
-        )
+        UserCard(userUiState)
         ListElements(elements = skills, title = "Skills") { skill ->
             Text(
                 text = skill.name,
@@ -108,7 +95,7 @@ fun HomeBody(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${TextOverflow.Ellipsis}: ${skill.level}%",
+                text = "${TextOverflow.Ellipsis}: ${skill.level}",
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
             )
@@ -121,63 +108,91 @@ fun HomeBody(modifier: Modifier = Modifier) {
                 fontWeight = FontWeight.Bold
             )
             Text(
-                text = "${project.status}: ${project.finalMark}%",
+                text = if (project.finalMark == "null") {
+                    project.status
+                } else {
+                    "${project.status}: ${project.finalMark}%"
+                },
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
+                color = when (project.status) {
+                    "finished" -> Color(0xFF5CB85C)
+                    "in_progress" -> Color(0xFFE6B29D)
+                    else -> Color(0xFFDD636F)
+                }
             )
         }
     }
 }
 
 @Composable
-fun UserCard(userInfo: GetUserDataModel) {
+fun UserCard(userUiState: UserUiState) {
     Card(
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.tertiary,
             contentColor = MaterialTheme.colorScheme.secondary
         ),
     ) {
-        Row(
-            modifier = Modifier.padding(all = 10.dp), verticalAlignment = Alignment.CenterVertically
-        ) {
+        Box {
             Image(
-                painter = rememberAsyncImagePainter(userInfo.userImg),
-                contentDescription = "Profile picture",
+                painter = rememberAsyncImagePainter(
+                    ImageRequest.Builder(LocalContext.current)
+                        .data(userUiState.imgCoalition)
+                        .decoderFactory(SvgDecoder.Factory())
+                        .build()
+                ),
+                contentDescription = "Background Image",
                 contentScale = ContentScale.Crop,
                 modifier = Modifier
-                    .border(
-                        1.5.dp, MaterialTheme.colorScheme.primary, RectangleShape
-                    )
+                    .align(Alignment.Center)
+                    .padding(start = 120.dp)
                     .size(120.dp)
+                    .alpha(0.5f)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Column {
-                Text(
-                    text = userInfo.name,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold,
+
+            Row(
+                modifier = Modifier.padding(all = 10.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Image(
+                    painter = rememberAsyncImagePainter(userUiState.imgUser),
+                    contentDescription = "Profile picture",
+                    contentScale = ContentScale.Crop,
+                    modifier = Modifier
+                        .border(
+                            1.5.dp, MaterialTheme.colorScheme.primary, RectangleShape
+                        )
+                        .size(120.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Column {
+                    Text(
+                        text = userUiState.login,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        style = MaterialTheme.typography.headlineMedium.copy(
+                            fontWeight = FontWeight.Bold,
+                        )
                     )
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = userInfo.email,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Level: " + userInfo.level,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = "Evaluation points: " + userInfo.evPoints,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = userUiState.email,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Level: " + userUiState.level,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                    Spacer(modifier = Modifier.height(4.dp))
+                    Text(
+                        text = "Evaluation points: " + userUiState.evPoints,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                    )
+                }
             }
         }
     }
@@ -186,5 +201,14 @@ fun UserCard(userInfo: GetUserDataModel) {
 @Preview
 @Composable
 fun PreviewHomeScreen() {
-    HomeLayout()
+    HomeLayout(
+        userUiState = UserUiState(
+            login = "Asolano-",
+            email = "asolano-@student42.Malaga.com",
+            imgCoalition = "https://cdn.intra.42.fr/coalition/image/274/Icono_Hades_2__3_.svg",
+            evPoints = "15",
+            level = "11",
+            coalition = "void"
+        )
+    )
 }

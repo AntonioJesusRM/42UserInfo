@@ -8,8 +8,7 @@ class GetCoalitionMapper : ResponseMapper<List<GetCoalitionResponse>, CoalitionM
         val firstCoalition = response.firstOrNull()
         return CoalitionModel(
             nameCoalition = firstCoalition?.name ?: "",
-            imgCoalition = firstCoalition?.imageUrl ?: "",
-            colorCoalition = firstCoalition?.color ?: ""
+            imgCoalition = firstCoalition?.imageUrl ?: ""
         )
     }
 }

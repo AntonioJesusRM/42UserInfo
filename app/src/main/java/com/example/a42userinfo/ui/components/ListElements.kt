@@ -8,6 +8,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.shrinkVertically
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -71,7 +72,11 @@ fun <T> ListElements(elements: List<T>, title: String, renderElement: @Composabl
 
 @Composable
 fun <T> PrintElements(elements: List<T>, renderElement: @Composable (T) -> Unit) {
-    LazyColumn(modifier = Modifier.padding(vertical = 4.dp)) {
+    LazyColumn(
+        modifier = Modifier
+            .padding(vertical = 4.dp)
+            .height(250.dp)
+    ) {
         items(items = elements) { project ->
             ElementColumn(project, renderElement = renderElement)
         }

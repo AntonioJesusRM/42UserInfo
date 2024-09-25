@@ -18,18 +18,14 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
-enum class UiState {
-    LOADING, SUCCESS, ERROR
-}
-
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val getTokenUseCase: GetTokenUseCase,
     private val getDataUseCase: GetDataUseCase,
     private val getCoalitionUseCase: GetCoalitionUseCase
 ) : ViewModel() {
-    private val _uiState = MutableStateFlow(UiState.LOADING)
-    val uiState: StateFlow<UiState> = _uiState.asStateFlow()
+    private val _uiState = MutableStateFlow(UserUiState())
+    val uiState: StateFlow<UserUiState> = _uiState.asStateFlow()
 
     fun getToken(code: String?) {
         if (code != null) {
@@ -41,10 +37,14 @@ class HomeViewModel @Inject constructor(
                 redirectUri = REDIRECT_URI
             )
             viewModelScope.launch {
-                _uiState.value = UiState.LOADING
+                _uiState.value = _uiState.value.copy(isLoading = true)
                 getTokenUseCase(tokenRequest).collect {
                     when (it) {
-                        is BaseResponse.Error -> _uiState.value = UiState.ERROR
+                        is BaseResponse.Error -> {
+                            _uiState.value = _uiState.value.copy(
+                                isLoading = false, error = it.error.message
+                            )
+                        }
 
                         is BaseResponse.Success -> getData()
                     }
@@ -57,9 +57,23 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             getDataUseCase().collect {
                 when (it) {
-                    is BaseResponse.Error -> _uiState.value = UiState.ERROR
+                    is BaseResponse.Error -> {
+                        _uiState.value =
+                            _uiState.value.copy(isLoading = false, error = it.error.message)
+                    }
 
-                    is BaseResponse.Success -> getCoalition(it.data.userId)
+                    is BaseResponse.Success -> {
+                        _uiState.value = _uiState.value.copy(
+                            login = it.data.login,
+                            email = it.data.email,
+                            level = it.data.cursusUsers.levelCursus,
+                            evPoints = it.data.correctionPoint,
+                            imgUser = it.data.userImg,
+                            listProjects = it.data.projectsUsers,
+                            skills = it.data.cursusUsers.skills
+                        )
+                        getCoalition(it.data.userId)
+                    }
                 }
             }
         }
@@ -69,9 +83,19 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             getCoalitionUseCase(id).collect {
                 when (it) {
-                    is BaseResponse.Error -> _uiState.value = UiState.ERROR
+                    is BaseResponse.Error -> {
+                        _uiState.value =
+                            _uiState.value.copy(isLoading = false, error = it.error.message)
+                    }
 
-                    is BaseResponse.Success -> _uiState.value = UiState.SUCCESS
+                    is BaseResponse.Success -> {
+                        _uiState.value = _uiState.value.copy(
+                            imgCoalition = it.data.imgCoalition,
+                            coalition = it.data.nameCoalition,
+                            isLoading = false,
+                            error = null
+                        )
+                    }
                 }
             }
         }
