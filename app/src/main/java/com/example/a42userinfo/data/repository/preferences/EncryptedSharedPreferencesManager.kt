@@ -50,4 +50,9 @@ class EncryptedSharedPreferencesManager @Inject constructor(
         )
         return test
     }
+
+    fun removeKeyFromEncryptedSharedPreferences(key: String) {
+        val editor = this.encryptedSharedPreferences.edit()
+        editor.remove(key).apply()
+    }
 }
