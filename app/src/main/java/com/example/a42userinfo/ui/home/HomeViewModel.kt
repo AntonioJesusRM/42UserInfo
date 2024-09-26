@@ -3,7 +3,6 @@ package com.example.a42userinfo.ui.home
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.a42userinfo.BuildConfig
-import com.example.a42userinfo.data.constants.GeneralConstants.Companion.CLIENT_ID
 import com.example.a42userinfo.data.constants.GeneralConstants.Companion.GRANT_TYPE
 import com.example.a42userinfo.data.constants.GeneralConstants.Companion.REDIRECT_URI
 import com.example.a42userinfo.data.repository.remote.request.PostTokenRequest
@@ -31,7 +30,7 @@ class HomeViewModel @Inject constructor(
         if (code != null) {
             val tokenRequest = PostTokenRequest(
                 grantType = GRANT_TYPE,
-                clientId = CLIENT_ID,
+                clientId = BuildConfig.CLIENT_ID,
                 clientSecret = BuildConfig.CLIENT_SECRET,
                 code = code,
                 redirectUri = REDIRECT_URI

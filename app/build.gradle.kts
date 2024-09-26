@@ -36,6 +36,13 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+
+            buildConfigField(
+                "String",
+                "CLIENT_ID",
+                "\"${project.findProperty("CLIENT_ID")}\""
+            )
+
             buildConfigField(
                 "String",
                 "CLIENT_SECRET",
