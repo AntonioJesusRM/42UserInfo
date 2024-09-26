@@ -1,9 +1,11 @@
 package com.example.a42userinfo
 
+import android.app.Activity
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.core.content.ContextCompat.startActivity
@@ -16,27 +18,26 @@ import com.example.a42userinfo.ui.login.LoginScreen
 
 @Composable
 fun MainNavHost(
-    navController: NavHostController,
-    code: String?
+    navController: NavHostController, code: String?, startDestination: String
 ) {
     val context = LocalContext.current
+    BackHandler {
+        (context as? Activity)?.finishAffinity()
+    }
     NavHost(
         navController = navController,
-        startDestination = if (code != null) Home.route else Login.route
+        startDestination = if (code != null) Home.route else startDestination
     ) {
         composable(route = Login.route) {
-            LoginScreen(
-                onClickLogin = {
-                    openLoginInGoogle(context)
-                }
-            )
+            LoginScreen(onClickLogin = {
+                openLoginInGoogle(context)
+            })
         }
         composable(route = Home.route) {
             HomeScreen(
                 onLogOutClick = {
                     navController.navigateSingleTopTo(Login.route)
-                },
-                code = code
+                }, code = code
             )
         }
     }
@@ -54,13 +55,12 @@ fun openLoginInGoogle(context: Context) {
 }
 
 
-fun NavHostController.navigateSingleTopTo(route: String) =
-    this.navigate(route) {
-        popUpTo(
-            this@navigateSingleTopTo.graph.findStartDestination().id
-        ) {
-            saveState = true
-        }
-        launchSingleTop = true
-        restoreState = true
+fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route) {
+    popUpTo(
+        this@navigateSingleTopTo.graph.findStartDestination().id
+    ) {
+        saveState = true
     }
+    launchSingleTop = true
+    restoreState = true
+}

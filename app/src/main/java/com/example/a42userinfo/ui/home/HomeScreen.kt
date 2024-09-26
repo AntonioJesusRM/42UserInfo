@@ -24,10 +24,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -36,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.rememberAsyncImagePainter
 import coil.decode.SvgDecoder
 import coil.request.ImageRequest
+import com.example.a42userinfo.R
 import com.example.a42userinfo.ui.components.HomeTopBar
 import com.example.a42userinfo.ui.components.ListElements
 import com.example.a42userinfo.ui.components.LoadComponents
@@ -50,6 +51,8 @@ fun HomeScreen(
     LaunchedEffect(key1 = code) {
         if (code != null) {
             homeViewModel.getToken(code)
+        } else {
+            homeViewModel.getData()
         }
     }
     if (userUiState.isLoading) {
@@ -116,9 +119,9 @@ fun HomeBody(modifier: Modifier = Modifier, userUiState: UserUiState) {
                 maxLines = 1,
                 overflow = TextOverflow.Ellipsis,
                 color = when (project.status) {
-                    "finished" -> Color(0xFF5CB85C)
-                    "in_progress" -> Color(0xFFE6B29D)
-                    else -> Color(0xFFDD636F)
+                    "finished" -> colorResource(R.color.green)
+                    "in_progress" -> colorResource(R.color.orange)
+                    else -> colorResource(R.color.red)
                 }
             )
         }
