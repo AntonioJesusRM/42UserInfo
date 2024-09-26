@@ -1,5 +1,5 @@
 [versions]
-agp = "8.5.2"
+agp = "8.6.1"
 coilSvg = "2.4.0"
 kotlin = "2.0.0"
 coreKtx = "1.13.1"
@@ -32,6 +32,7 @@ appcompat = "1.7.0"
 pluginDaggerHilt = "2.49"
 pluginKotlin = "2.0.20"
 pluginSecrets = "2.0.1"
+pluginSonarQube = "5.1.0.4882"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -81,4 +82,4 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 hiltPluggin = { id = "com.google.dagger.hilt.android", version.ref = "pluginDaggerHilt" }
 kotlin-parcelize = { id = "org.jetbrains.kotlin.plugin.parcelize", version.ref = "pluginKotlin" }
 pluginSecrets = { id = "com.google.android.libraries.mapsplatform.secrets-gradle-plugin", version.ref = "pluginSecrets" }
-
+pluginSonarQube = { id = "org.sonarqube", version.ref = "pluginSonarQube" }

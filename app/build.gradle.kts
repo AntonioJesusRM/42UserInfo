@@ -6,11 +6,17 @@ plugins {
     alias(libs.plugins.kotlin.parcelize)
     alias(libs.plugins.compose.compiler)
     alias(libs.plugins.pluginSecrets)
+    alias(libs.plugins.pluginSonarQube)
 }
 
 android {
     namespace = "com.example.a42userinfo"
     compileSdk = 34
+
+    lint {
+        disable += "ObsoleteLintCustomCheck"
+        baseline = file("lint-baseline.xml")
+    }
 
     defaultConfig {
         applicationId = "com.example.a42userinfo"
