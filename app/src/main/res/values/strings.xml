@@ -11,4 +11,6 @@
     <string name="dialog_logout_text">¿Estas seguro que quieres cerrar sesión?</string>
     <string name="dialog_accept">Aceptar</string>
     <string name="dialog_cancel">Cancelar</string>
+    <!-- Error -->
+    <string name="error_connect_internet">No hay conexión a Internet. Por favor, verifica su conexión.</string>
 </resources>
