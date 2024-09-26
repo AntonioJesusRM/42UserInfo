@@ -35,4 +35,4 @@ Once the application is running, users can:
 ## Code Quality
 Here is a screenshot of the SonarQube analysis for the 42UserInfo project:
 
-![SonarQubeImg](./sonarQubeImg.PNG "Project inspection code capture")
+![SonarQubeImg](./SonarQubeImg.PNG "Project inspection code capture")
