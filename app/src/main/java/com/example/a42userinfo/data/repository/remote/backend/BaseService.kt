@@ -16,7 +16,7 @@ abstract class BaseService {
 
             return if (!response.isSuccessful) {
                 val errorResponse = mapErrorResponse(response)
-                Log.e(TAG, "%> errorResponse: ${errorResponse.message}")
+                Log.e(TAG, "%> errorResponse: ${errorResponse.errorDescription}")
                 BaseResponse.Error(errorResponse)
             } else {
                 response.body()?.let { body ->
@@ -34,8 +34,9 @@ abstract class BaseService {
         val errorBody = response.errorBody()?.string()
         val errorData = try {
             val parsedData = Gson().fromJson(errorBody, ErrorResponse::class.java)
+            parsedData.message
             if (response.code() == 401) {
-                parsedData.errorCode = 401.toString()
+                parsedData.errorCode = 401
             }
             parsedData
         } catch (exception: java.lang.Exception) {
@@ -45,14 +46,14 @@ abstract class BaseService {
         }
 
         return ErrorModel(
-            errorData?.error ?: "", errorData?.errorCode ?: "0", errorData?.message ?: ""
+            errorData?.error ?: "", errorData?.errorCode ?: 400, errorData?.message ?: ""
         )
     }
 
     private fun mapErrorResponse(throwable: Throwable): ErrorModel {
         return (ErrorModel(
             "Lo sentimos, estamos presentando problemas de conexión.",
-            "0",
+            0,
             throwable.message ?: "Vuelve a intentarlo más tarde."
         ))
     }

@@ -11,4 +11,7 @@
     <string name="dialog_logout_text">¿Estas seguro que quieres cerrar sesión?</string>
     <string name="dialog_accept">Aceptar</string>
     <string name="dialog_cancel">Cancelar</string>
+    <!-- Error -->
+    <string name="error_internet_connection">No hay conexión a Internet. Por favor, verifica su conexión.</string>
+    <string name="error_api_connection">No se pudo establecer la conexión con la API. Por favor, inténtalo de nuevo más tarde o contacta al administrador del servidor.</string>
 </resources>

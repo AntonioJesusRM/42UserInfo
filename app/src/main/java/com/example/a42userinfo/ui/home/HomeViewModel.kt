@@ -42,7 +42,7 @@ class HomeViewModel @Inject constructor(
                     when (it) {
                         is BaseResponse.Error -> {
                             _uiState.value = _uiState.value.copy(
-                                isLoading = false, error = it.error.message
+                                isLoading = false, error = it.error.errorDescription
                             )
                         }
 
@@ -60,7 +60,10 @@ class HomeViewModel @Inject constructor(
                 when (it) {
                     is BaseResponse.Error -> {
                         _uiState.value =
-                            _uiState.value.copy(isLoading = false, error = it.error.message)
+                            _uiState.value.copy(
+                                isLoading = false,
+                                error = it.error.errorDescription
+                            )
                     }
 
                     is BaseResponse.Success -> {
@@ -86,7 +89,10 @@ class HomeViewModel @Inject constructor(
                 when (it) {
                     is BaseResponse.Error -> {
                         _uiState.value =
-                            _uiState.value.copy(isLoading = false, error = it.error.message)
+                            _uiState.value.copy(
+                                isLoading = false,
+                                error = it.error.errorDescription
+                            )
                     }
 
                     is BaseResponse.Success -> {
