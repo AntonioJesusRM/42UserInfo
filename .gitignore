@@ -91,5 +91,6 @@ crashlytics/
 .idea/workspace.xml
 
 # Other files
+secrets.properties
 .cxx/
 *.lock

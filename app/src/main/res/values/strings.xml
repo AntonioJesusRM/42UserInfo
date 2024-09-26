@@ -1,3 +1,17 @@
 <resources>
     <string name="app_name">42 User Info</string>
+    <!-- Login String -->
+    <string name="login_button">Iniciar sesion</string>
+    <!-- List component -->
+    <string name="list_component_show_less">Show less</string>
+    <string name="list_component_show_more">Show more</string>
+    <!-- Tool Bar -->
+    <string name="tool_bar_exit_content_description">"Cerrar sesión"</string>
+    <!-- Dialog -->
+    <string name="dialog_logout_text">¿Estas seguro que quieres cerrar sesión?</string>
+    <string name="dialog_accept">Aceptar</string>
+    <string name="dialog_cancel">Cancelar</string>
+    <!-- Error -->
+    <string name="error_internet_connection">No hay conexión a Internet. Por favor, verifica su conexión.</string>
+    <string name="error_api_connection">No se pudo establecer la conexión con la API. Por favor, inténtalo de nuevo más tarde o contacta al administrador del servidor.</string>
 </resources>

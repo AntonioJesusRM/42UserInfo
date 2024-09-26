@@ -3,27 +3,41 @@ package com.example.a42userinfo
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.tooling.preview.Preview
-import com.example.a42userinfo.ui.theme._42UserInfoTheme
+import androidx.navigation.compose.rememberNavController
+import com.example.a42userinfo.data.session.DataUserSession
+import com.example.a42userinfo.ui.theme.UserInfoTheme
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var dataUserSession: DataUserSession
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+
+        var authCode: String? = null
+        intent.data?.let { uri ->
+            if (uri.toString().startsWith("com.example.a42userinfo://oauth/callback")) {
+                authCode = uri.getQueryParameter("code")
+            }
+        }
+
         setContent {
-            _42UserInfoTheme {
-                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
-                    Greeting(
-                        name = "Android",
-                        modifier = Modifier.padding(innerPadding)
-                    )
+            UserInfoTheme("") {
+                Surface(
+                    modifier = Modifier.fillMaxSize(),
+                    color = MaterialTheme.colorScheme.secondary,
+                    contentColor = MaterialTheme.colorScheme.primary
+                ) {
+                    UserInfoApp(authCode, dataUserSession)
                 }
             }
         }
@@ -31,17 +45,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
+fun UserInfoApp(authCode: String?, dataUserSession: DataUserSession) {
+    val navController = rememberNavController()
 
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    _42UserInfoTheme {
-        Greeting("Android")
-    }
+    val startDestination = if (dataUserSession.haveSession()) Home.route else Login.route
+
+    MainNavHost(navController = navController, code = authCode, startDestination = startDestination)
 }
