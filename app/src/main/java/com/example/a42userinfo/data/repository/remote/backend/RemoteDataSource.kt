@@ -30,7 +30,7 @@ class RemoteDataSource @Inject constructor(
             if (!apiResult.data.token.isNullOrEmpty() && !apiResult.data.refreshToken.isNullOrEmpty())
                 emit(BaseResponse.Success(true))
             else
-                emit(BaseResponse.Error(ErrorModel("Empty data", "", "")))
+                emit(BaseResponse.Error(ErrorModel("Empty data", 0, "")))
         } else if (apiResult is BaseResponse.Error) {
             emit(BaseResponse.Error(apiResult.error))
         }
