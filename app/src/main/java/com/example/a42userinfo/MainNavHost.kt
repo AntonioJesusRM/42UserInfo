@@ -1,7 +1,6 @@
 package com.example.a42userinfo
 
 import android.app.Activity
-import android.app.AlertDialog
 import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.Intent
@@ -16,6 +15,7 @@ import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import com.example.a42userinfo.ui.components.showErrorDialog
 import com.example.a42userinfo.ui.home.HomeScreen
 import com.example.a42userinfo.ui.login.LoginScreen
 
@@ -48,7 +48,7 @@ fun MainNavHost(
 
 fun openLoginInGoogle(context: Context) {
     if (!isNetworkAvailable(context)) {
-        showErrorDialog(context, context.getString(R.string.error_connect_internet))
+        showErrorDialog(context, context.getString(R.string.error_internet_connection))
         return
     }
     val loginUrl =
@@ -67,14 +67,6 @@ fun isNetworkAvailable(context: Context): Boolean {
     val networkCapabilities =
         connectivityManager.getNetworkCapabilities(connectivityManager.activeNetwork)
     return networkCapabilities != null && networkCapabilities.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
-}
-
-fun showErrorDialog(context: Context, message: String) {
-    AlertDialog.Builder(context)
-        .setTitle("Error")
-        .setMessage(message)
-        .setPositiveButton("OK", null)
-        .show()
 }
 
 fun NavHostController.navigateSingleTopTo(route: String) = this.navigate(route) {

@@ -1,7 +1,5 @@
 package com.example.a42userinfo.ui.home
 
-import android.content.ContentValues.TAG
-import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
@@ -28,6 +26,7 @@ import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
@@ -40,6 +39,7 @@ import com.example.a42userinfo.R
 import com.example.a42userinfo.ui.components.HomeTopBar
 import com.example.a42userinfo.ui.components.ListElements
 import com.example.a42userinfo.ui.components.LoadComponents
+import com.example.a42userinfo.ui.components.showErrorDialog
 import com.example.a42userinfo.ui.theme.UserInfoTheme
 
 @Composable
@@ -58,9 +58,11 @@ fun HomeScreen(
     if (userUiState.isLoading) {
         LoadComponents()
     } else if (userUiState.error != null) {
-        Text("Error: ${userUiState.error}")
+        val context = LocalContext.current
+        val errorMessage =
+            userUiState.error!!.ifBlank { stringResource(R.string.error_api_connection) }
+        showErrorDialog(context, errorMessage, onLogOutClick)
     } else {
-        Log.d(TAG, "%> DATA: $userUiState")
         HomeLayout(onLogOutClick, userUiState)
     }
 }
