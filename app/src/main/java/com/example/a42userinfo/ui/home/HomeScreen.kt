@@ -51,6 +51,8 @@ fun HomeScreen(
     LaunchedEffect(key1 = code) {
         if (code != null) {
             homeViewModel.getToken(code)
+        } else {
+            homeViewModel.getData()
         }
     }
     if (userUiState.isLoading) {

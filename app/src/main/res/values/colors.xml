@@ -3,7 +3,7 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <!--App colors-->
-    <color name="orange">0xFFE6B29D</color>
-    <color name="red">0xFFDD636F</color>
-    <color name="green">0xFF5CB85C</color>
+    <color name="orange">#FFE6B29D</color>
+    <color name="red">#FFDD636F</color>
+    <color name="green">#FF5CB85C</color>
 </resources>

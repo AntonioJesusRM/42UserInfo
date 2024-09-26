@@ -53,8 +53,9 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    private fun getData() {
+    fun getData() {
         viewModelScope.launch {
+            _uiState.value = _uiState.value.copy(isLoading = true)
             getDataUseCase().collect {
                 when (it) {
                     is BaseResponse.Error -> {

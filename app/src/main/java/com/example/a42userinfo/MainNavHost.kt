@@ -18,7 +18,7 @@ import com.example.a42userinfo.ui.login.LoginScreen
 
 @Composable
 fun MainNavHost(
-    navController: NavHostController, code: String?
+    navController: NavHostController, code: String?, startDestination: String
 ) {
     val context = LocalContext.current
     BackHandler {
@@ -26,7 +26,7 @@ fun MainNavHost(
     }
     NavHost(
         navController = navController,
-        startDestination = if (code != null) Home.route else Login.route
+        startDestination = if (code != null) Home.route else startDestination
     ) {
         composable(route = Login.route) {
             LoginScreen(onClickLogin = {

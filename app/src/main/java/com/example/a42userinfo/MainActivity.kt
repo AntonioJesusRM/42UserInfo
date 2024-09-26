@@ -9,11 +9,17 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import com.example.a42userinfo.data.session.DataUserSession
 import com.example.a42userinfo.ui.theme.UserInfoTheme
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+
+    @Inject
+    lateinit var dataUserSession: DataUserSession
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -31,7 +37,7 @@ class MainActivity : ComponentActivity() {
                     color = MaterialTheme.colorScheme.secondary,
                     contentColor = MaterialTheme.colorScheme.primary
                 ) {
-                    UserInfoApp(authCode)
+                    UserInfoApp(authCode, dataUserSession)
                 }
             }
         }
@@ -39,8 +45,10 @@ class MainActivity : ComponentActivity() {
 }
 
 @Composable
-fun UserInfoApp(authCode: String?) {
+fun UserInfoApp(authCode: String?, dataUserSession: DataUserSession) {
     val navController = rememberNavController()
 
-    MainNavHost(navController = navController, code = authCode)
+    val startDestination = if (dataUserSession.haveSession()) Home.route else Login.route
+
+    MainNavHost(navController = navController, code = authCode, startDestination = startDestination)
 }
