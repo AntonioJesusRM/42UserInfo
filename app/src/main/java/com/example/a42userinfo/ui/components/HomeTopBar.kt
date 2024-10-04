@@ -1,7 +1,7 @@
 package com.example.a42userinfo.ui.components
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.Logout
+import androidx.compose.material.icons.filled.Logout
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -35,7 +35,7 @@ fun HomeTopBar(
     ), actions = {
         IconButton(onClick = { isDialogVisible = true }) {
             Icon(
-                imageVector = Icons.AutoMirrored.Filled.Logout,
+                imageVector = Icons.Filled.Logout,
                 contentDescription = stringResource(R.string.tool_bar_exit_content_description),
                 tint = MaterialTheme.colorScheme.primary
             )
